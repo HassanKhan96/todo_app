@@ -7,7 +7,6 @@ import cors from "cors";
 import debug from "debug";
 import { RoutesConfig } from "./routes/common/common.routes.config";
 import { UserRoutes } from "./routes/users/userRoutes";
-import { connectDb } from "./config/db.config";
 
 dotenv.config();
 
@@ -18,8 +17,7 @@ const debugLog: debug.IDebugger = debug("app");
 
 app.use(cors());
 app.use(express.json());
-
-const db = connectDb();
+app.use(express.urlencoded({ extended: true }));
 
 // const loggerOptions: expressWinston.LoggerOptions = {
 //   transports: [new winston.transports.Console()],
@@ -39,6 +37,7 @@ routes.push(new UserRoutes(app));
 
 const runningMessage = `Server running at http://localhost:${process.env.PORT}`;
 app.get("/", (req: express.Request, res: express.Response) => {
+  console.log(req.body);
   res.status(200).send(runningMessage);
 });
 

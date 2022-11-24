@@ -1,9 +1,8 @@
 import { Application, Request, Response } from "express";
-import { UserController } from "../../controllers/user.controller";
+import * as UserController from "../../controllers/user.controller";
 import { RoutesConfig } from "../common/common.routes.config";
 
 export class UserRoutes extends RoutesConfig {
-  userController = new UserController();
   constructor(app: Application) {
     super(app, "users");
   }
@@ -11,20 +10,21 @@ export class UserRoutes extends RoutesConfig {
   configureRoutes(): Application {
     this.app
       .route("/users")
-      .get((req: Request, res: Response) =>
-        this.userController.getUsers(req, res)
-      )
+      .get(UserController.getUsers)
       .post((req: Request, res: Response) =>
-        this.userController.createUser(req, res)
+        UserController.createUser(req, res)
       );
 
     this.app
       .route("/users/:userId")
+      .get((req: Request, res: Response) =>
+        UserController.getUserById(req, res)
+      )
       .patch((req: Request, res: Response) =>
-        this.userController.updateUser(req, res)
+        UserController.updateUser(req, res)
       )
       .delete((req: Request, res: Response) =>
-        this.userController.deleteUser(req, res)
+        UserController.deleteUser(req, res)
       );
     return this.app;
   }

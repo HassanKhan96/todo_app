@@ -1,28 +1,23 @@
 import { Request, Response } from "express";
-import { Pool } from "pg";
-import { connectDb } from "../config/db.config";
+import * as UserServices from "../services/user.service";
 
-export class UserController {
-  db: Pool = connectDb();
+export const getUsers = async (req: Request, res: Response) => {
+  return res.status(200).send("this route returns all users");
+};
 
-  async getUsers(req: Request, res: Response) {
-    console.log(req.body);
-    return res.status(200).send("this route returns all users");
-  }
+export const getUserById = async (req: Request, res: Response) => {
+  return res.status(200).send(`this route returns ${req.params.userId} user`);
+};
 
-  async createUser(req: Request, res: Response) {
-    const user = await this.db.query(
-      "INSERT INTO users (name, email, password, avatar) VALUES ($1, $2, $3, $4)",
-      [req.body.name, req.body.email, req.body.password, req.body.avatar]
-    );
-    return res.status(201).send(user);
-  }
+export const createUser = async (req: Request, res: Response) => {
+  const user = await UserServices.createUser(req.body);
+  return res.status(201).send(user);
+};
 
-  updateUser(req: Request, res: Response) {
-    return res.status(201).send(`this route updates ${req.params.userId} user`);
-  }
+export const updateUser = (req: Request, res: Response) => {
+  return res.status(201).send(`this route updates ${req.params.userId} user`);
+};
 
-  deleteUser(req: Request, res: Response) {
-    return res.status(200).send(`this route deletes ${req.params.users} user`);
-  }
-}
+export const deleteUser = (req: Request, res: Response) => {
+  return res.status(200).send(`this route deletes ${req.params.users} user`);
+};
