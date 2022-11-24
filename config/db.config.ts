@@ -1,16 +1,15 @@
-import { Pool } from "pg";
+import { Pool, Connection, PoolConfig } from "pg";
 
-export async function pgPool() {
-  try {
-    const pool = new Pool({
-      user: "postgres",
-      host: "localhost",
-      database: "todo_app",
-      password: "",
-      port: 5432,
-    });
-    return pool;
-  } catch (error) {
-    console.log(error);
-  }
-}
+export const connectDb = () => {
+  const pool: Pool = new Pool({
+    user: "postgres",
+    host: "localhost",
+    database: "todo_app",
+    password: "",
+    port: 5432,
+    max: 10,
+    idleTimeoutMillis: 0,
+    connectionTimeoutMillis: 0,
+  });
+  return pool;
+};

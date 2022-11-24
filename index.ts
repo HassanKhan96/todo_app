@@ -6,8 +6,8 @@ import * as expressWinston from "express-winston";
 import cors from "cors";
 import debug from "debug";
 import { RoutesConfig } from "./routes/common/common.routes.config";
-import { UserRoutes } from "./routes/users/userRoute";
-import { Pool } from "pg";
+import { UserRoutes } from "./routes/users/userRoutes";
+import { connectDb } from "./config/db.config";
 
 dotenv.config();
 
@@ -18,6 +18,8 @@ const debugLog: debug.IDebugger = debug("app");
 
 app.use(cors());
 app.use(express.json());
+
+const db = connectDb();
 
 // const loggerOptions: expressWinston.LoggerOptions = {
 //   transports: [new winston.transports.Console()],
