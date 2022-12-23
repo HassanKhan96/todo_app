@@ -62,3 +62,14 @@ export class InternalServerError extends BaseError {
     super(name, statusCode, isOperational, description);
   }
 }
+
+export class ConflictError extends BaseError {
+  constructor(
+    name: string,
+    statusCode: number = HttpStatusCode.CONFLICT_ERROR,
+    isOperational: boolean = true,
+    description: string = "Conflict Error"
+  ) {
+    super(name, statusCode, isOperational, description);
+  }
+}

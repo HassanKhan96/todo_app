@@ -1,15 +1,32 @@
 import { pool } from "../config/db.config";
-import { UserDto } from "../interface/create.user.dto";
-import { InternalServerError, NotFoundError } from "../utils/error";
+import { UserDto } from "../interface/users/create.user.dto";
+import * as passwordUtils from "../helpers/password.utils";
+import {
+  ConflictError,
+  InternalServerError,
+  NotFoundError,
+} from "../utils/error";
+import { Pool, QueryResult } from "pg";
 
 export const createUser = async (userDto: UserDto) => {
+  const userExists = await getUserByEmail(userDto.email);
+  if (userExists.rowCount > 0)
+    throw new ConflictError("Sorry user already exists");
+  userDto.password = await passwordUtils.hashPassword(userDto.password);
   const user = await pool.query(
-    "INSERT INTO users (name, email, password, avatar) VALUES ($1, $2, $3, $4) RETURNING *",
-    [userDto.name, userDto.email, userDto.password, userDto.avatar]
+    "INSERT INTO users (name, email, password, avatar, createdAt, lastLogin) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+    [
+      userDto.name,
+      userDto.email,
+      userDto.password,
+      userDto.avatar,
+      new Date(),
+      new Date(),
+    ]
   );
 
   if (user.rowCount === 0) throw new InternalServerError("Cannot create user.");
-  return user.rows[0];
+  return user;
 };
 
 export const getUsers = async () => {
@@ -19,10 +36,16 @@ export const getUsers = async () => {
 
 export const getUserById = async (id: Number) => {
   const user = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
-  if (user.rowCount === 0) {
-    throw new NotFoundError("user not found");
-  }
+  if (user.rowCount === 0) throw new NotFoundError("user not found");
   return user.rows[0];
+};
+
+export const getUserByEmail = async (email: string): Promise<QueryResult> => {
+  const user = await pool.query("SELECT * FROM users WHERE email = $1", [
+    email,
+  ]);
+
+  return user;
 };
 
 export const updateUser = async (id: Number, update: UserDto) => {

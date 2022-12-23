@@ -4,10 +4,12 @@ import * as http from "http";
 import * as winston from "winston";
 import * as expressWinston from "express-winston";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import debug from "debug";
 import { RoutesConfig } from "./routes/common/common.routes.config";
 import { UserRoutes } from "./routes/users/userRoutes";
 import { BaseError } from "./utils/error";
+import { AuthRoutes } from "./routes/auth/authRoutes";
 
 dotenv.config();
 
@@ -19,6 +21,7 @@ const debugLog: debug.IDebugger = debug("app");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use((error: BaseError, req: Request, res: Response, next: NextFunction) => {
   res.status(error.statusCode).send({
     name: error.name,
@@ -41,6 +44,7 @@ app.use((error: BaseError, req: Request, res: Response, next: NextFunction) => {
 // app.use(expressWinston.logger(loggerOptions));
 
 routes.push(new UserRoutes(app));
+routes.push(new AuthRoutes(app));
 
 const runningMessage = `Server running at http://localhost:${process.env.PORT}`;
 // app.get("/", (req: express.Request, res: express.Response) => {
